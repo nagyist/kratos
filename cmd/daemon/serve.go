@@ -84,6 +84,12 @@ func ServePublic(r driver.Registry, cmd *cobra.Command, args []string, slOpts *s
 		n.UseFunc(mw)
 	}
 
+	if tracer := r.Tracer(ctx); tracer.IsLoaded() {
+		n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+			x.TraceHandler(next).ServeHTTP(w, r)
+		})
+	}
+
 	publicLogger := reqlog.NewMiddlewareFromLogger(
 		l,
 		"public#"+c.SelfPublicURL(ctx).String(),
@@ -115,21 +121,17 @@ func ServePublic(r driver.Registry, cmd *cobra.Command, args []string, slOpts *s
 	r.RegisterPublicRoutes(ctx, router)
 	r.PrometheusManager().RegisterRouter(router.Router)
 
-	var handler http.Handler = n
-	options, enabled := r.Config().CORS(ctx, "public")
-	if enabled {
-		handler = cors.New(options).Handler(handler)
+	if options, enabled := r.Config().CORS(ctx, "public"); enabled {
+		n.UseFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+			cors.New(options).Handler(next).ServeHTTP(w, r)
+		})
 	}
 
 	certs := c.GetTLSCertificatesForPublic(ctx)
 
-	if tracer := r.Tracer(ctx); tracer.IsLoaded() {
-		handler = x.TraceHandler(handler)
-	}
-
 	// #nosec G112 - the correct settings are set by graceful.WithDefaults
 	server := graceful.WithDefaults(&http.Server{
-		Handler:   handler,
+		Handler:   n,
 		TLSConfig: &tls.Config{GetCertificate: certs, MinVersion: tls.VersionTLS12},
 	})
 	addr := c.PublicListenOn(ctx)
