@@ -70,7 +70,7 @@ func TestManager(t *testing.T) {
 
 		t.Run("case="+tc.d, func(t *testing.T) {
 			t.Run("method=SendRecoveryLink", func(t *testing.T) {
-				s, err := reg.RecoveryStrategies(ctx).Strategy("link")
+				s, err := reg.RecoveryStrategies(ctx).ActiveStrategies("link")
 				require.NoError(t, err)
 				f, err := recovery.NewFlow(conf, time.Hour, "", u, s, flow.TypeBrowser)
 				require.NoError(t, err)
@@ -118,7 +118,7 @@ func TestManager(t *testing.T) {
 					config.ViperKeyCourierHTTPRequestConfig + ".url": srv.URL,
 				})
 
-				s, err := reg.RecoveryStrategies(ctx).Strategy("link")
+				s, err := reg.RecoveryStrategies(ctx).ActiveStrategies("link")
 				require.NoError(t, err)
 				f, err := recovery.NewFlow(conf, time.Hour, "", u, s, flow.TypeBrowser)
 				require.NoError(t, err)
@@ -190,7 +190,7 @@ func TestManager(t *testing.T) {
 				flow:      "recovery",
 				configKey: config.ViperKeySelfServiceRecoveryNotifyUnknownRecipients,
 				send: func(t *testing.T) {
-					s, err := reg.RecoveryStrategies(ctx).Strategy("link")
+					s, err := reg.RecoveryStrategies(ctx).ActiveStrategies("link")
 					require.NoError(t, err)
 					f, err := recovery.NewFlow(conf, time.Hour, "", u, s, flow.TypeBrowser)
 					require.NoError(t, err)

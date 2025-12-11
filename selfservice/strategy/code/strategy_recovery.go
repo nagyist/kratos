@@ -46,6 +46,10 @@ func (s *Strategy) RecoveryStrategyID() string {
 	return string(recovery.RecoveryStrategyCode)
 }
 
+func (s *Strategy) IsPrimary() bool {
+	return true
+}
+
 // This builds the initial UI (first recovery screen).
 func (s *Strategy) PopulateRecoveryMethod(r *http.Request, f *recovery.Flow) error {
 	switch f.State {
@@ -60,6 +64,7 @@ func (s *Strategy) PopulateRecoveryMethod(r *http.Request, f *recovery.Flow) err
 		f.UI = &container.Container{
 			Method: "POST",
 			Action: flow.AppendFlowTo(urlx.AppendPaths(s.deps.Config().SelfPublicURL(r.Context()), recovery.RouteSubmitFlow), f.ID).String(),
+			Nodes:  f.UI.Nodes,
 		}
 		f.UI.SetCSRF(s.deps.GenerateCSRFToken(r))
 		f.UI.GetNodes().Append(
@@ -410,7 +415,7 @@ func (s *Strategy) retryRecoveryFlow(w http.ResponseWriter, r *http.Request, ft 
 	ctx := r.Context()
 	config := s.deps.Config()
 
-	f, err := recovery.NewFlow(config, config.SelfServiceFlowRecoveryRequestLifespan(ctx), s.deps.CSRFHandler().RegenerateToken(w, r), r, s, ft)
+	f, err := recovery.NewFlow(config, config.SelfServiceFlowRecoveryRequestLifespan(ctx), s.deps.CSRFHandler().RegenerateToken(w, r), r, recovery.Strategies{s}, ft)
 	if err != nil {
 		return err
 	}

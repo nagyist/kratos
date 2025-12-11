@@ -917,11 +917,11 @@ func TestGetActiveRecoveryStrategy(t *testing.T) {
 			config.ViperKeySelfServiceRecoveryUse: "code",
 		})
 
-		_, err := reg.GetActiveRecoveryStrategy(ctx)
+		_, err := reg.GetActiveRecoveryStrategies(ctx)
 		require.Error(t, err)
 	})
 
-	t.Run("returns active strategy", func(t *testing.T) {
+	t.Run("returns active strategies", func(t *testing.T) {
 		for _, sID := range []string{
 			"code", "link",
 		} {
@@ -931,9 +931,10 @@ func TestGetActiveRecoveryStrategy(t *testing.T) {
 					config.ViperKeySelfServiceRecoveryUse:              sID,
 				})
 
-				s, err := reg.GetActiveRecoveryStrategy(ctx)
+				s, err := reg.GetActiveRecoveryStrategies(ctx)
 				require.NoError(t, err)
-				require.Equal(t, sID, s.RecoveryStrategyID())
+				require.Len(t, s, 1)
+				require.Equal(t, sID, s[0].RecoveryStrategyID())
 			})
 		}
 	})

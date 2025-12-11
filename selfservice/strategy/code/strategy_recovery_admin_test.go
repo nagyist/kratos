@@ -61,14 +61,15 @@ func TestAdminStrategy(t *testing.T) {
 
 	t.Run("no panic on empty body #1384", func(t *testing.T) {
 		ctx := context.Background()
-		s, err := reg.RecoveryStrategies(ctx).Strategy("code")
+		s, err := reg.RecoveryStrategies(ctx).ActiveStrategies("code")
 		require.NoError(t, err)
+		require.Len(t, s, 1)
 		w := httptest.NewRecorder()
 		r := &http.Request{URL: new(url.URL)}
 		f, err := recovery.NewFlow(reg.Config(), time.Minute, "", r, s, flow.TypeBrowser)
 		require.NoError(t, err)
 		require.NotPanics(t, func() {
-			require.Error(t, s.(*Strategy).HandleRecoveryError(w, r, f, nil, errors.New("test")))
+			require.Error(t, s[0].(*Strategy).HandleRecoveryError(w, r, f, nil, errors.New("test")))
 		})
 	})
 
