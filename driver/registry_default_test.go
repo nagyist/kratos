@@ -949,7 +949,7 @@ func TestGetActiveVerificationStrategy(t *testing.T) {
 			"selfservice.methods.code.enabled":        false,
 			config.ViperKeySelfServiceVerificationUse: "code",
 		})
-		_, err := reg.GetActiveVerificationStrategy(ctx)
+		_, _, err := reg.GetActiveVerificationStrategies(ctx)
 		require.Error(t, err)
 	})
 
@@ -963,7 +963,7 @@ func TestGetActiveVerificationStrategy(t *testing.T) {
 					config.ViperKeySelfServiceVerificationUse:          sID,
 				})
 
-				s, err := reg.GetActiveVerificationStrategy(ctx)
+				_, s, err := reg.GetActiveVerificationStrategies(ctx)
 				require.NoError(t, err)
 				require.Equal(t, sID, s.VerificationStrategyID())
 			})

@@ -188,7 +188,7 @@ func TestSender(t *testing.T) {
 		verificationFlow := func(t *testing.T) {
 			t.Helper()
 
-			f, err := verification.NewFlow(conf, time.Hour, "", u, code.NewStrategy(reg), flow.TypeBrowser)
+			f, err := verification.NewFlow(conf, time.Hour, "", u, verification.Strategies{code.NewStrategy(reg)}, flow.TypeBrowser)
 			require.NoError(t, err)
 
 			require.NoError(t, reg.VerificationFlowPersister().CreateVerificationFlow(ctx, f))
@@ -265,7 +265,7 @@ func TestSender(t *testing.T) {
 				flow:      "verification",
 				configKey: config.ViperKeySelfServiceVerificationNotifyUnknownRecipients,
 				send: func(t *testing.T) {
-					s, err := reg.VerificationStrategies(ctx).Strategy("code")
+					s, _, err := reg.VerificationStrategies(ctx).ActiveStrategies("code")
 					require.NoError(t, err)
 					f, err := verification.NewFlow(conf, time.Hour, "", u, s, flow.TypeBrowser)
 					require.NoError(t, err)
