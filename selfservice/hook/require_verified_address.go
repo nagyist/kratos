@@ -106,6 +106,9 @@ func (e *AddressVerifier) ExecuteLoginPostHook(w http.ResponseWriter, r *http.Re
 
 		verificationFlow.State = flow.StateEmailSent
 		for _, strategy := range strategies {
+			if strategy.IsPrimary() {
+				verificationFlow.Active = sqlxx.NullString(strategy.NodeGroup())
+			}
 			if err := strategy.PopulateVerificationMethod(r, verificationFlow); err != nil {
 				return err
 			}
@@ -119,7 +122,6 @@ func (e *AddressVerifier) ExecuteLoginPostHook(w http.ResponseWriter, r *http.Re
 				WithMetaLabel(text.NewInfoNodeResendOTP()),
 		)
 
-		verificationFlow.Active = sqlxx.NullString(strategy.NodeGroup())
 		if err := e.r.VerificationFlowPersister().CreateVerificationFlow(ctx, verificationFlow); err != nil {
 			return err
 		}

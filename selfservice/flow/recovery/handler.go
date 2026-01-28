@@ -122,7 +122,7 @@ func (h *Handler) createNativeRecoveryFlow(w http.ResponseWriter, r *http.Reques
 		h.d.SelfServiceErrorManager().Forward(r.Context(), w, r, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Recovery is not allowed because it was disabled.")))
 		return
 	}
-	activeRecoveryStrategies, err := h.d.GetActiveRecoveryStrategies(r.Context())
+	activeRecoveryStrategies, _, err := h.d.GetActiveRecoveryStrategies(r.Context())
 	if err != nil {
 		h.d.SelfServiceErrorManager().Forward(r.Context(), w, r, err)
 		return
@@ -190,7 +190,7 @@ func (h *Handler) createBrowserRecoveryFlow(w http.ResponseWriter, r *http.Reque
 		h.d.SelfServiceErrorManager().Forward(r.Context(), w, r, errors.WithStack(herodot.ErrBadRequest.WithReasonf("Recovery is not allowed because it was disabled.")))
 		return
 	}
-	activeRecoveryStrategies, err := h.d.GetActiveRecoveryStrategies(r.Context())
+	activeRecoveryStrategies, _, err := h.d.GetActiveRecoveryStrategies(r.Context())
 	if err != nil {
 		h.d.SelfServiceErrorManager().Forward(r.Context(), w, r, err)
 		return

@@ -33,27 +33,25 @@ type (
 	StrategyProvider interface {
 		AllRecoveryStrategies() Strategies
 		RecoveryStrategies(ctx context.Context) Strategies
-		GetActiveRecoveryStrategies(ctx context.Context) (Strategies, error)
+		GetActiveRecoveryStrategies(ctx context.Context) (active Strategies, primary Strategy, err error)
 	}
 )
 
-func (s Strategies) ActiveStrategies(id string) (Strategies, error) {
+func (s Strategies) ActiveStrategies(id string) (active Strategies, primary Strategy, err error) {
 	ids := make([]string, len(s))
-	activeStrategies := Strategies{}
-	foundPrimary := false
 	for k, ss := range s {
 		ids[k] = ss.RecoveryStrategyID()
 		if ss.RecoveryStrategyID() == id || !ss.IsPrimary() {
-			activeStrategies = append(activeStrategies, ss)
+			active = append(active, ss)
 			if ss.IsPrimary() {
-				foundPrimary = true
+				primary = ss
 			}
 		}
 	}
 
-	if !foundPrimary {
-		return nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("unable to find strategy for %s have %v", id, ids))
+	if primary == nil {
+		return nil, nil, errors.WithStack(herodot.ErrInternalServerError.WithReasonf("unable to find strategy for %s have %v", id, ids))
 	}
 
-	return activeStrategies, nil
+	return active, primary, nil
 }

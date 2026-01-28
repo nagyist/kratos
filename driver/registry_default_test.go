@@ -917,7 +917,7 @@ func TestGetActiveRecoveryStrategy(t *testing.T) {
 			config.ViperKeySelfServiceRecoveryUse: "code",
 		})
 
-		_, err := reg.GetActiveRecoveryStrategies(ctx)
+		_, _, err := reg.GetActiveRecoveryStrategies(ctx)
 		require.Error(t, err)
 	})
 
@@ -931,10 +931,10 @@ func TestGetActiveRecoveryStrategy(t *testing.T) {
 					config.ViperKeySelfServiceRecoveryUse:              sID,
 				})
 
-				s, err := reg.GetActiveRecoveryStrategies(ctx)
+				s, ps, err := reg.GetActiveRecoveryStrategies(ctx)
 				require.NoError(t, err)
 				require.Len(t, s, 1)
-				require.Equal(t, sID, s[0].RecoveryStrategyID())
+				require.Equal(t, sID, ps.RecoveryStrategyID())
 			})
 		}
 	})

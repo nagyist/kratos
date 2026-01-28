@@ -250,7 +250,7 @@ func TestSender(t *testing.T) {
 				flow:      "recovery",
 				configKey: config.ViperKeySelfServiceRecoveryNotifyUnknownRecipients,
 				send: func(t *testing.T) {
-					s, err := reg.RecoveryStrategies(ctx).ActiveStrategies("code")
+					s, _, err := reg.RecoveryStrategies(ctx).ActiveStrategies("code")
 					require.NoError(t, err)
 					f, err := recovery.NewFlow(conf, time.Hour, "", u, s, flow.TypeBrowser)
 					require.NoError(t, err)

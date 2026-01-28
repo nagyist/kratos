@@ -88,10 +88,8 @@ func TestAdminStrategy(t *testing.T) {
 	}
 
 	t.Run("no panic on empty body #1384", func(t *testing.T) {
-		s, err := reg.RecoveryStrategies(t.Context()).ActiveStrategies("link")
+		s, ps, err := reg.RecoveryStrategies(t.Context()).ActiveStrategies("link")
 		require.NoError(t, err)
-		require.NotEmpty(t, s)
-		ps := s[0]
 
 		r := &http.Request{URL: new(url.URL)}
 		f, err := recovery.NewFlow(reg.Config(), time.Minute, "", r, s, flow.TypeBrowser)
