@@ -780,7 +780,7 @@ func (s *Strategy) recoveryHandleFormSubmission(w http.ResponseWriter, r *http.R
 		// Continue execution
 	}
 
-	// re-initialize the UI with a "clean" new state TODO(pierre)
+	// re-initialize the UI with a "clean" new state
 	f.UI = &container.Container{
 		Method: "POST",
 		Action: flow.AppendFlowTo(urlx.AppendPaths(s.deps.Config().SelfPublicURL(r.Context()), recovery.RouteSubmitFlow), f.ID).String(),
