@@ -363,6 +363,24 @@ func (n *Nodes) RemoveGroups(group ...UiNodeGroup) {
 	}
 }
 
+// ClearTransientNodes removes all nodes that belong to transient groups.
+func (n *Nodes) ClearTransientNodes() {
+	n.RemoveGroups(
+		DefaultGroup,
+		PasswordGroup,
+		OpenIDConnectGroup,
+		ProfileGroup,
+		LinkGroup,
+		CodeGroup,
+		TOTPGroup,
+		LookupGroup,
+		WebAuthnGroup,
+		PasskeyGroup,
+		IdentifierFirstGroup,
+		SAMLGroup,
+	)
+}
+
 // Upsert updates or appends a node.
 func (n *Nodes) Upsert(node *Node) {
 	if n == nil {

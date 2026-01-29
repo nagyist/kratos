@@ -66,6 +66,7 @@ func (s *Strategy) PopulateRecoveryMethod(r *http.Request, f *recovery.Flow) err
 			Action: flow.AppendFlowTo(urlx.AppendPaths(s.deps.Config().SelfPublicURL(r.Context()), recovery.RouteSubmitFlow), f.ID).String(),
 			Nodes:  f.UI.Nodes,
 		}
+		f.UI.Nodes.ClearTransientNodes()
 		f.UI.SetCSRF(s.deps.GenerateCSRFToken(r))
 		f.UI.GetNodes().Append(
 			node.NewInputField("recovery_address", nil, node.CodeGroup, node.InputAttributeTypeText, node.WithRequiredInputAttribute).
@@ -659,7 +660,9 @@ func (s *Strategy) recoveryV2HandleStateConfirmingAddress(r *http.Request, f *re
 	f.UI = &container.Container{
 		Method: "POST",
 		Action: flow.AppendFlowTo(urlx.AppendPaths(s.deps.Config().SelfPublicURL(r.Context()), recovery.RouteSubmitFlow), f.ID).String(),
+		Nodes:  f.UI.Nodes,
 	}
+	f.UI.Nodes.ClearTransientNodes()
 	f.UI.SetCSRF(f.CSRFToken)
 
 	f.State = flow.StateRecoveryAwaitingCode
@@ -777,11 +780,13 @@ func (s *Strategy) recoveryHandleFormSubmission(w http.ResponseWriter, r *http.R
 		// Continue execution
 	}
 
-	// re-initialize the UI with a "clean" new state
+	// re-initialize the UI with a "clean" new state TODO(pierre)
 	f.UI = &container.Container{
 		Method: "POST",
 		Action: flow.AppendFlowTo(urlx.AppendPaths(s.deps.Config().SelfPublicURL(r.Context()), recovery.RouteSubmitFlow), f.ID).String(),
+		Nodes:  f.UI.Nodes,
 	}
+	f.UI.Nodes.ClearTransientNodes()
 
 	f.UI.SetCSRF(s.deps.GenerateCSRFToken(r))
 
