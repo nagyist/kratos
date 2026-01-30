@@ -507,7 +507,9 @@ func (s *Strategy) recoveryV2HandleStateAwaitingAddress(r *http.Request, f *reco
 	f.UI = &container.Container{
 		Method: "POST",
 		Action: flow.AppendFlowTo(urlx.AppendPaths(s.deps.Config().SelfPublicURL(r.Context()), recovery.RouteSubmitFlow), f.ID).String(),
+		Nodes:  f.UI.Nodes,
 	}
+	f.UI.Nodes.ClearTransientNodes()
 
 	f.UI.SetCSRF(f.CSRFToken)
 
@@ -574,7 +576,9 @@ func (s *Strategy) recoveryV2HandleStateAwaitingAddressChoice(r *http.Request, f
 	f.UI = &container.Container{
 		Method: "POST",
 		Action: flow.AppendFlowTo(urlx.AppendPaths(s.deps.Config().SelfPublicURL(r.Context()), recovery.RouteSubmitFlow), f.ID).String(),
+		Nodes:  f.UI.Nodes,
 	}
+	f.UI.Nodes.ClearTransientNodes()
 	f.UI.SetCSRF(f.CSRFToken)
 
 	f.State = flow.StateRecoveryAwaitingAddressConfirm
