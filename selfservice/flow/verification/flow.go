@@ -144,8 +144,8 @@ func NewFlow(conf *config.Config, exp time.Duration, csrf string, r *http.Reques
 	}
 
 	for _, strategy := range strategies {
-		if strategy.IsPrimary() {
-			f.Active = sqlxx.NullString(strategy.NodeGroup())
+		if ps, isPrimary := strategy.(PrimaryStrategy); isPrimary {
+			f.Active = sqlxx.NullString(ps.NodeGroup())
 		}
 		if err := strategy.PopulateVerificationMethod(r, f); err != nil {
 			return nil, err

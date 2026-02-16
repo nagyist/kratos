@@ -54,7 +54,7 @@ func (m *RegistryDefault) LinkSender() *link.Sender {
 // GetActiveVerificationStrategies returns the currently active verification strategies.
 // It returns a list of all strategies and the specific primary strategy.
 // If no primary verification strategy has been set, an error is returned.
-func (m *RegistryDefault) GetActiveVerificationStrategies(ctx context.Context) (active verification.Strategies, primary verification.Strategy, err error) {
+func (m *RegistryDefault) GetActiveVerificationStrategies(ctx context.Context) (active verification.Strategies, primary verification.PrimaryStrategy, err error) {
 	as := m.Config().SelfServiceFlowVerificationUse(ctx)
 	s, ps, err := m.VerificationStrategies(ctx).ActiveStrategies(as)
 	if err != nil {

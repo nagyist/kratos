@@ -440,8 +440,8 @@ func (h *Handler) updateVerificationFlow(w http.ResponseWriter, r *http.Request)
 	var g node.UiNodeGroup
 	var found bool
 	for _, ss := range h.d.AllVerificationStrategies() {
-		// If an active strategy is set, but it does not match the current strategy, that strategy is not responsible anyways.
-		if ss.IsPrimary() && f.Active.String() != "" && f.Active.String() != ss.VerificationStrategyID() {
+		// If a primary strategy is set, but it does not match the current strategy, that strategy is not responsible anyways.
+		if ps, isPrimary := ss.(PrimaryStrategy); isPrimary && f.Active.String() != "" && f.Active.String() != ps.VerificationStrategyID() {
 			continue
 		}
 

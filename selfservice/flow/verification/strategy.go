@@ -25,29 +25,31 @@ const (
 type (
 	Strategy interface {
 		VerificationStrategyID() string
-		IsPrimary() bool
 		NodeGroup() node.UiNodeGroup
 		PopulateVerificationMethod(*http.Request, *Flow) error
 		Verify(w http.ResponseWriter, r *http.Request, f *Flow) (err error)
+	}
+	PrimaryStrategy interface {
+		Strategy
 		SendVerificationCode(context.Context, *Flow, *identity.Identity, *identity.VerifiableAddress) error
 	}
 	Strategies       []Strategy
 	StrategyProvider interface {
 		VerificationStrategies(ctx context.Context) Strategies
 		AllVerificationStrategies() Strategies
-		GetActiveVerificationStrategies(context.Context) (active Strategies, primary Strategy, err error)
+		GetActiveVerificationStrategies(context.Context) (active Strategies, primary PrimaryStrategy, err error)
 	}
 )
 
-func (s Strategies) ActiveStrategies(id string) (active Strategies, primary Strategy, err error) {
+func (s Strategies) ActiveStrategies(id string) (active Strategies, primary PrimaryStrategy, err error) {
 	ids := make([]string, len(s))
 	activeStrategies := Strategies{}
 	for k, ss := range s {
 		ids[k] = ss.VerificationStrategyID()
-		if ss.VerificationStrategyID() == id || !ss.IsPrimary() {
+		if ps, isPrimary := ss.(PrimaryStrategy); ss.VerificationStrategyID() == id || !isPrimary {
 			activeStrategies = append(activeStrategies, ss)
-			if ss.IsPrimary() {
-				primary = ss
+			if isPrimary {
+				primary = ps
 			}
 		}
 	}

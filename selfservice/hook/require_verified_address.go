@@ -106,8 +106,8 @@ func (e *AddressVerifier) ExecuteLoginPostHook(w http.ResponseWriter, r *http.Re
 
 		verificationFlow.State = flow.StateEmailSent
 		for _, strategy := range strategies {
-			if strategy.IsPrimary() {
-				verificationFlow.Active = sqlxx.NullString(strategy.NodeGroup())
+			if ps, isPrimary := strategy.(verification.PrimaryStrategy); isPrimary {
+				verificationFlow.Active = sqlxx.NullString(ps.NodeGroup())
 			}
 			if err := strategy.PopulateVerificationMethod(r, verificationFlow); err != nil {
 				return err
