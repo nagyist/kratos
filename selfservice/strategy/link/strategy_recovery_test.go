@@ -39,7 +39,6 @@ import (
 	"github.com/ory/x/assertx"
 	"github.com/ory/x/contextx"
 	"github.com/ory/x/ioutilx"
-	"github.com/ory/x/pointerx"
 	"github.com/ory/x/sqlxx"
 	"github.com/ory/x/urlx"
 )
@@ -117,7 +116,7 @@ func TestAdminStrategy(t *testing.T) {
 
 		rl, _, err := adminSDK.IdentityAPI.CreateRecoveryLinkForIdentity(t.Context()).CreateRecoveryLinkForIdentityBody(kratos.CreateRecoveryLinkForIdentityBody{
 			IdentityId: id.ID.String(),
-			ExpiresIn:  pointerx.Ptr("100ms"),
+			ExpiresIn:  new("100ms"),
 		}).Execute()
 		require.NoError(t, err)
 
@@ -141,7 +140,7 @@ func TestAdminStrategy(t *testing.T) {
 
 		rl, _, err := adminSDK.IdentityAPI.CreateRecoveryLinkForIdentity(t.Context()).CreateRecoveryLinkForIdentityBody(kratos.CreateRecoveryLinkForIdentityBody{
 			IdentityId: id.ID.String(),
-			ExpiresIn:  pointerx.Ptr("100ms"),
+			ExpiresIn:  new("100ms"),
 		}).Execute()
 		require.NoError(t, err)
 

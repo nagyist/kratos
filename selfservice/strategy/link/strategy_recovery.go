@@ -31,7 +31,6 @@ import (
 	"github.com/ory/x/decoderx"
 	"github.com/ory/x/httprouterx"
 	"github.com/ory/x/otelx"
-	"github.com/ory/x/pointerx"
 	"github.com/ory/x/sqlcon"
 	"github.com/ory/x/sqlxx"
 	"github.com/ory/x/urlx"
@@ -502,7 +501,7 @@ func (s *Strategy) markRecoveryAddressVerified(r *http.Request, f *recovery.Flow
 	for k, v := range id.VerifiableAddresses {
 		if v.Value == recoveryAddress.Value {
 			id.VerifiableAddresses[k].Verified = true
-			id.VerifiableAddresses[k].VerifiedAt = pointerx.Ptr(sqlxx.NullTime(time.Now().UTC()))
+			id.VerifiableAddresses[k].VerifiedAt = new(sqlxx.NullTime(time.Now().UTC()))
 			id.VerifiableAddresses[k].Status = identity.VerifiableAddressStatusCompleted
 			if err := s.d.PrivilegedIdentityPool().UpdateVerifiableAddress(r.Context(), &id.VerifiableAddresses[k], "verified", "verified_at", "status"); err != nil {
 				return s.HandleRecoveryError(r, f, nil, err)

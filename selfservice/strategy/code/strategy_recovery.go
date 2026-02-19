@@ -17,7 +17,6 @@ import (
 	"github.com/ory/kratos/x/redir"
 
 	"github.com/ory/x/otelx/semconv"
-	"github.com/ory/x/pointerx"
 	"github.com/ory/x/sqlcon"
 
 	"github.com/gofrs/uuid"
@@ -825,7 +824,7 @@ func (s *Strategy) markRecoveryAddressVerified(w http.ResponseWriter, r *http.Re
 	for k, v := range id.VerifiableAddresses {
 		if v.Value == recoveryAddress.Value {
 			id.VerifiableAddresses[k].Verified = true
-			id.VerifiableAddresses[k].VerifiedAt = pointerx.Ptr(sqlxx.NullTime(time.Now().UTC()))
+			id.VerifiableAddresses[k].VerifiedAt = new(sqlxx.NullTime(time.Now().UTC()))
 			id.VerifiableAddresses[k].Status = identity.VerifiableAddressStatusCompleted
 			if err := s.deps.PrivilegedIdentityPool().UpdateVerifiableAddress(r.Context(), &id.VerifiableAddresses[k], "verified", "verified_at", "status"); err != nil {
 				return s.HandleRecoveryError(w, r, f, nil, err)
